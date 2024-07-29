@@ -2,7 +2,7 @@ import { image } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import type { _Object } from "@aws-sdk/client-s3";
-import { imageHash } from "image-hash";
+import { blurHashEncode } from "./blurHash";
 
 async function forEachS3File(callback: (_: _Object) => Promise<unknown>) {
   const s3 = new S3Client({
@@ -46,18 +46,6 @@ async function forEachS3File(callback: (_: _Object) => Promise<unknown>) {
   await internalListObjects(callback);
 }
 
-function imageHashAsync(url: string, bits: number, method: boolean) {
-  return new Promise((resolve, reject) => {
-    imageHash(url, bits, method, (error: Error | null, hash: string | null) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(hash);
-      }
-    });
-  });
-}
-
 async function main() {
   const fileNames: Array<string> = [];
 
@@ -75,9 +63,7 @@ async function main() {
     await Promise.all(
       fileNames.map(async (name) => {
         const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${name}`;
-        const hash = (await imageHashAsync(url, 16, true).catch((e) => {
-          console.error(`Failed to load ${url}`, e);
-        })) as string;
+        const hash = await blurHashEncode(url).catch((_) => "");
         console.log(`Hashed ${name}`);
         return {
           id: name.split(".")[0]!,
