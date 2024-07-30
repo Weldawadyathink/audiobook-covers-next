@@ -48,7 +48,7 @@ async function indexFile(id: string, extension: string) {
   await db
     .update(image)
     // @ts-expect-error replicate will always return a result
-    .set({ embedding: replicateResult[0].embedding, hash: hash })
+    .set({ embedding: replicateResult[0].embedding, blurhash: hash })
     .where(eq(image.id, id));
 
   console.log(`Inserted embedding and blurhash for ${id}`);

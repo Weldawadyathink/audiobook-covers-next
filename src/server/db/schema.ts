@@ -21,6 +21,7 @@ export const image = createTable("image", {
   source: text("source"),
   extension: text("extension"),
   hash: text("hash"),
+  blurhash: text("blurhash"),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   embedding: vector("embedding", { dimensions: 768 }),
   searchable: boolean("searchable"),
