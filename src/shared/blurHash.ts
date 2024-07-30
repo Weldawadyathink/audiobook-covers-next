@@ -30,7 +30,7 @@ async function getImage(
 /**
  * Generate BlurHash from url
  */
-export async function blurHashEncode(url: string) {
+export async function blurhashEncode(url: string) {
   const imageData = await getImage(url);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
   return encode(imageData.data, imageData.width, imageData.height, 4, 4);

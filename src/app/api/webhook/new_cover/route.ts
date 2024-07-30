@@ -1,11 +1,10 @@
 import type { NextRequest } from "next/server";
 import { waitUntil } from "@vercel/functions";
-import { env } from "@/env";
-import { blurHashEncode } from "@/shared/blurHash";
-import Replicate from "replicate";
+import { blurhashEncode } from "@/shared/blurHash";
 import { image } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { eq } from "drizzle-orm";
+import { runSingleClip } from "@/shared/clip";
 
 export const maxDuration = 60; // Ensure ample time for long replicate responses
 
@@ -20,35 +19,20 @@ interface SupabaseWebhookPayload {
   old_record: string;
 }
 
-interface ClipReturnObject {
-  input: string;
-  embedding: Array<number>;
-}
-
 async function indexFile(id: string, extension: string) {
   const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${id}.${extension}`;
 
-  const replicate = new Replicate({
-    auth: env.REPLICATE_API_TOKEN,
-  });
+  // Replicate takes longer to process, and may have cold start. Start replicate
+  // before running blurhash algorithm
+  const replicatePromise = runSingleClip(url);
 
-  const replicatePromise = replicate.run(
-    "andreasjansson/clip-features:75b33f253f7714a281ad3e9b28f63e3232d583716ef6718f2e46641077ea040a",
-    {
-      input: {
-        inputs: url,
-      },
-    },
-  );
+  const hash = await blurhashEncode(url);
 
-  const hash = await blurHashEncode(url);
-
-  const replicateResult = (await replicatePromise) as Array<ClipReturnObject>;
+  const replicateResult = await replicatePromise;
 
   await db
     .update(image)
-    // @ts-expect-error replicate will always return a result
-    .set({ embedding: replicateResult[0].embedding, blurhash: hash })
+    .set({ embedding: replicateResult.embedding, blurhash: hash })
     .where(eq(image.id, id));
 
   console.log(`Inserted embedding and blurhash for ${id}`);

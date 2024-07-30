@@ -2,7 +2,7 @@ import { image } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import type { _Object } from "@aws-sdk/client-s3";
-import { blurHashEncode } from "@/shared/blurHash";
+import { blurhashEncode } from "@/shared/blurHash";
 
 async function forEachS3File(callback: (_: _Object) => Promise<unknown>) {
   const s3 = new S3Client({
@@ -63,7 +63,7 @@ async function main() {
     await Promise.all(
       fileNames.map(async (name) => {
         const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${name}`;
-        const hash = await blurHashEncode(url).catch((_) => "");
+        const hash = await blurhashEncode(url).catch((_) => "");
         console.log(`Hashed ${name}`);
         return {
           id: name.split(".")[0]!,
