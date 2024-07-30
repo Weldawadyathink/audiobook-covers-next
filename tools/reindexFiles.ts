@@ -2,7 +2,7 @@ import { image } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import type { _Object } from "@aws-sdk/client-s3";
-import { blurHashEncode } from "./blurHash";
+import { blurHashEncode } from "@/shared/blurHash";
 
 async function forEachS3File(callback: (_: _Object) => Promise<unknown>) {
   const s3 = new S3Client({

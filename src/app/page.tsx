@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { api, HydrateClient } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 import { SearchWindow } from "@/app/_components/search";
 import Image from "next/image";
 

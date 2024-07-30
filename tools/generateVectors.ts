@@ -34,6 +34,7 @@ for (const { id, extension } of result) {
   dbUpdatePromises.push(
     db
       .update(image)
+      // @ts-expect-error replicate will always return a result
       .set({ embedding: output.embedding })
       .where(eq(image.id, id)),
   );
