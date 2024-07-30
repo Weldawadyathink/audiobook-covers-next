@@ -4,6 +4,12 @@ import { runSingleClip } from "@/shared/clip";
 import { db } from "@/server/db";
 import { image } from "@/server/db/schema";
 
+export interface ImageData {
+  id: string;
+  url: string;
+  blurhash: string;
+}
+
 export const coverRouter = createTRPCRouter({
   getTextEmbedding: publicProcedure
     .input(z.string().trim().min(1))
@@ -13,7 +19,7 @@ export const coverRouter = createTRPCRouter({
     }),
   getRandom: publicProcedure
     .input(z.object({ n: z.number().int() }))
-    .query(async ({ input }) => {
+    .query(async ({ input }): Promise<Array<ImageData>> => {
       const dbResult = await db
         .select({
           id: image.id,

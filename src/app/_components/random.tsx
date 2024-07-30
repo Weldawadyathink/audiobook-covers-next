@@ -1,8 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import Image from "next/image";
-import { getBlurhashDataUrl } from "@/lib/blurhashDecode";
+import { ImageCard } from "@/app/_components/ImageCard";
 
 export function RandomView() {
   const n = 10;
@@ -10,18 +9,10 @@ export function RandomView() {
   const images = api.cover.getRandom.useQuery({ n: n });
 
   return (
-    <>
+    <div className="flex flex-wrap justify-center gap-6 p-12">
       {images.data?.map((image) => (
-        <Image
-          key={image.id}
-          src={image.url}
-          alt="Alt Text Here"
-          width={200}
-          height={200}
-          placeholder="blur"
-          blurDataURL={getBlurhashDataUrl(image.blurhash)}
-        />
+        <ImageCard imageData={image} key={image.id} />
       ))}
-    </>
+    </div>
   );
 }

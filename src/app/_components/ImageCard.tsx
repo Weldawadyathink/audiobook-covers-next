@@ -1,7 +1,8 @@
+import Image from "next/image";
+import type { ImageData } from "@/server/api/routers/cover";
 import { decode } from "blurhash";
 
 // Originally from https://gist.github.com/oleggrishechkin/95483267a0b242e0004cbd5d5138c732
-
 export function getBlurhashDataUrl(inputHash: string) {
   // source of code below https://github.com/wheany/js-png-encoder/blob/master/generatepng.js
   const DEFLATE_METHOD = String.fromCharCode(0x78, 0x01);
@@ -172,4 +173,22 @@ export function getBlurhashDataUrl(inputHash: string) {
   };
 
   return blurHashToDataURL(inputHash);
+}
+
+// End external source code
+
+export function ImageCard(props: { imageData: ImageData }) {
+  const { url, blurhash } = props.imageData;
+  return (
+    <div className="relative aspect-square h-80 w-80 overflow-hidden rounded-3xl duration-300 ease-in-out hover:scale-110">
+      <Image
+        src={url}
+        alt="Audiobook cover image"
+        className="h-full w-full object-contain"
+        fill={true}
+        placeholder="blur"
+        blurDataURL={getBlurhashDataUrl(blurhash)}
+      />
+    </div>
+  );
 }
