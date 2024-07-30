@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HydrateClient } from "@/trpc/server";
 import { SearchWindow } from "@/app/_components/search";
 import Image from "next/image";
+import { RandomView } from "@/app/_components/random";
 
 export default async function Home() {
   return (
@@ -41,12 +42,7 @@ export default async function Home() {
             <SearchWindow />
           </div>
 
-          <Image
-            src="https://f001.backblazeb2.com/file/com-audiobookcovers/original/001fc332-70bd-4fd4-bc51-581ae317aeb3.jpg"
-            alt="Sample alt text"
-            width={256}
-            height={256}
-          />
+          <RandomView />
         </div>
       </main>
     </HydrateClient>
