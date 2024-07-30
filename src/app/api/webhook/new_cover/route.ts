@@ -7,6 +7,8 @@ import { image } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { eq } from "drizzle-orm";
 
+export const maxDuration = 60; // Ensure ample time for long replicate responses
+
 interface SupabaseWebhookPayload {
   type: string;
   table: string;
