@@ -48,10 +48,13 @@ async function indexFile(id: string, extension: string) {
     // @ts-expect-error replicate will always return a result
     .set({ embedding: replicateResult[0].embedding, hash: hash })
     .where(eq(image.id, id));
+
+  console.log(`Inserted embedding and blurhash for ${id}`);
 }
 
 export async function POST(req: NextRequest) {
   const json = (await req.json()) as SupabaseWebhookPayload;
+  console.log(["Received webhook for new cover", json]);
   waitUntil(indexFile(json.record.id, json.record.extension));
   return new Response("Success!", {
     status: 200,
