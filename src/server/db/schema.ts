@@ -24,7 +24,7 @@ export const image = createTable("image", {
   id: uuid("id").primaryKey(),
   source: text("source"),
   extension: text("extension"),
-  hash: text("hash").unique(),
+  hash: text("hash"),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   embedding: vector("embedding", { dimensions: 768 }),
   searchable: boolean("searchable"),
