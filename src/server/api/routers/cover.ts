@@ -1,6 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { z } from "zod";
-import { runSingleClip } from "@/shared/clip";
+import { runSingleClip } from "@/server/utils/clip";
 import { db } from "@/server/db";
 import { image } from "@/server/db/schema";
 

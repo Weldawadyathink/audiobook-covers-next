@@ -1,10 +1,10 @@
 import type { NextRequest } from "next/server";
 import { waitUntil } from "@vercel/functions";
-import { blurhashEncode } from "@/shared/blurHash";
+import { blurhashEncode } from "@/server/utils/blurhash";
 import { image } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { eq } from "drizzle-orm";
-import { runSingleClip } from "@/shared/clip";
+import { runSingleClip } from "@/server/utils/clip";
 
 export const maxDuration = 60; // Ensure ample time for long replicate responses
 
