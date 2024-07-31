@@ -180,13 +180,28 @@ export function getBlurhashDataUrl(inputHash: string) {
 }
 // End external source code
 
-export function ImageCard(props: { imageData: ImageData }) {
-  const { url, blurhash } = props.imageData;
+export function ImageCard(props: {
+  imageData: ImageData;
+  currentFlippedCardId?: string | undefined;
+  onFlip?: ((isFlipped: boolean, imageData: ImageData) => void) | undefined;
+}) {
   const [isFlipped, setIsFlipped] = useState(false);
+
+  if (
+    props.currentFlippedCardId !== undefined &&
+    props.currentFlippedCardId !== props.imageData.id &&
+    isFlipped
+  ) {
+    setTimeout(() => setIsFlipped(false), 250);
+    // setIsFlipped(false);
+  }
 
   function flip() {
     console.log("flip", isFlipped);
-    setIsFlipped((isFlipped) => !isFlipped);
+    if (props.onFlip !== undefined) {
+      props.onFlip(!isFlipped, props.imageData);
+    }
+    setIsFlipped(!isFlipped);
   }
 
   return (
@@ -211,12 +226,12 @@ export function ImageCard(props: { imageData: ImageData }) {
           )}
         >
           <Image
-            src={url}
+            src={props.imageData.url}
             className="object-contain"
             alt="Audiobook cover image"
             fill={true}
             placeholder="blur"
-            blurDataURL={getBlurhashDataUrl(blurhash)}
+            blurDataURL={getBlurhashDataUrl(props.imageData.blurhash)}
           />
         </div>
 
