@@ -1,8 +1,4 @@
-import Link from "next/link";
-
 import { HydrateClient } from "@/trpc/server";
-import { SearchWindow } from "@/app/_components/search";
-import Image from "next/image";
 import { RandomView } from "@/app/_components/random";
 
 export default async function Home() {

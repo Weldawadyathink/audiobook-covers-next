@@ -44,6 +44,7 @@
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
+    "@xpd/tailwind-3dtransforms": "^1.0.3",
     "blurhash": "^2.0.5",
     "drizzle-kit": "^0.23.1",
     "eslint": "^8.57.0",

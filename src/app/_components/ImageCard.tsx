@@ -1,6 +1,8 @@
 import Image from "next/image";
 import type { ImageData } from "@/server/api/routers/cover";
 import { decode } from "blurhash";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 // Originally from https://gist.github.com/oleggrishechkin/95483267a0b242e0004cbd5d5138c732
 export function getBlurhashDataUrl(inputHash: string) {
@@ -179,16 +181,41 @@ export function getBlurhashDataUrl(inputHash: string) {
 
 export function ImageCard(props: { imageData: ImageData }) {
   const { url, blurhash } = props.imageData;
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  function flip() {
+    console.log("flip", isFlipped);
+    setIsFlipped((isFlipped) => !isFlipped);
+  }
+
   return (
-    <div className="relative aspect-square h-80 w-80 overflow-hidden rounded-3xl duration-300 ease-in-out hover:scale-110">
-      <Image
-        src={url}
-        alt="Audiobook cover image"
-        className="h-full w-full object-contain"
-        fill={true}
-        placeholder="blur"
-        blurDataURL={getBlurhashDataUrl(blurhash)}
-      />
+    <div
+      // Clickable area
+      className="relative aspect-square h-80 w-80 duration-500 ease-in-out hover:scale-110"
+      onClick={flip}
+    >
+      <div
+        // Flipping div
+        className={cn(
+          "transform-style-3d backface-hidden relative h-full w-full transform overflow-hidden rounded-3xl object-contain duration-700 ease-in-out",
+          isFlipped ? "rotate-y-180" : "",
+        )}
+      >
+        <Image
+          // Front of card
+          src={url}
+          alt="Audiobook cover image"
+          className="h-full w-full object-contain"
+          fill={true}
+          placeholder="blur"
+          blurDataURL={getBlurhashDataUrl(blurhash)}
+        />
+
+        <div
+          // Back of card
+          className="rotate-y-180 backface-hidden h-full w-full transform bg-stone-700 object-contain"
+        ></div>
+      </div>
     </div>
   );
 }
