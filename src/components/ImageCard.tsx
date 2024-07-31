@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import styles from "@/styles/FlipCard.module.css";
 import useDownloader from "react-use-downloader";
+import Link from "next/link";
+import copy from "copy-to-clipboard";
 
 // Originally from https://gist.github.com/oleggrishechkin/95483267a0b242e0004cbd5d5138c732
 export function getBlurhashDataUrl(inputHash: string) {
@@ -248,10 +250,26 @@ export function ImageCard(props: {
           className={cn(
             "backface-hidden absolute h-full w-full overflow-hidden rounded-3xl bg-stone-700",
             "rotate-y-180 transform-style-3d transform",
+            "flex flex-col items-center justify-center gap-3",
           )}
         >
-          <Button>Button</Button>
-          <Button onClick={handleDownload}>Download</Button>
+          <Button className="w-36 rounded-3xl" asChild>
+            <Link href={`/image/${props.imageData.id}`}>Image Page</Link>
+          </Button>
+
+          <Button className="w-36 rounded-3xl" asChild>
+            <Link href="https://reddit.com/r/audiobookcovers" target="_blank">
+              Source
+            </Link>
+          </Button>
+
+          <Button className="w-36 rounded-3xl" onClick={handleDownload}>
+            Download
+          </Button>
+
+          <Button className="w-36 rounded-3xl" onClick={handleDownload}>
+            Download
+          </Button>
         </div>
       </div>
     </div>
