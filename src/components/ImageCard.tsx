@@ -3,6 +3,8 @@ import type { ImageData } from "@/server/api/routers/cover";
 import { decode } from "blurhash";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import styles from "@/styles/FlipCard.module.css";
 
 // Originally from https://gist.github.com/oleggrishechkin/95483267a0b242e0004cbd5d5138c732
 export function getBlurhashDataUrl(inputHash: string) {
@@ -176,7 +178,6 @@ export function getBlurhashDataUrl(inputHash: string) {
 
   return blurHashToDataURL(inputHash);
 }
-
 // End external source code
 
 export function ImageCard(props: { imageData: ImageData }) {
@@ -191,30 +192,44 @@ export function ImageCard(props: { imageData: ImageData }) {
   return (
     <div
       // Clickable area
-      className="relative aspect-square h-80 w-80 duration-500 ease-in-out hover:scale-110"
+      className="aspect-square w-56 cursor-pointer duration-500 ease-in-out hover:scale-110"
       onClick={flip}
     >
       <div
         // Flipping div
         className={cn(
-          "transform-style-3d backface-hidden relative h-full w-full transform overflow-hidden rounded-3xl object-contain duration-700 ease-in-out",
-          isFlipped ? "rotate-y-180" : "",
+          "h-full w-full",
+          "duration-700 ease-in-out",
+          isFlipped ? styles.flipped : "",
+          styles.card,
         )}
       >
-        <Image
-          // Front of card
-          src={url}
-          alt="Audiobook cover image"
-          className="h-full w-full object-contain"
-          fill={true}
-          placeholder="blur"
-          blurDataURL={getBlurhashDataUrl(blurhash)}
-        />
+        <div
+          className={cn(
+            "absolute h-full w-full overflow-hidden rounded-3xl",
+            styles.front,
+          )}
+        >
+          <Image
+            // Front of card
+            src={url}
+            className="object-contain"
+            alt="Audiobook cover image"
+            fill={true}
+            placeholder="blur"
+            blurDataURL={getBlurhashDataUrl(blurhash)}
+          />
+        </div>
 
         <div
           // Back of card
-          className="rotate-y-180 backface-hidden h-full w-full transform bg-stone-700 object-contain"
-        ></div>
+          className={cn(
+            "absolute h-full w-full overflow-hidden rounded-3xl bg-stone-700",
+            styles.back,
+          )}
+        >
+          <Button>Button</Button>
+        </div>
       </div>
     </div>
   );

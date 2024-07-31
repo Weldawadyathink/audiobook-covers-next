@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { ImageCard } from "@/app/_components/ImageCard";
+import { ImageCard } from "@/components/ImageCard";
 
 export function RandomView() {
   const n = 10;
