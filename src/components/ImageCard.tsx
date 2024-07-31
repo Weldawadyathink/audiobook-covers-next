@@ -1,10 +1,11 @@
 import Image from "next/image";
 import type { ImageData } from "@/server/api/routers/cover";
 import { decode } from "blurhash";
-import { useState } from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import styles from "@/styles/FlipCard.module.css";
+import useDownloader from "react-use-downloader";
 
 // Originally from https://gist.github.com/oleggrishechkin/95483267a0b242e0004cbd5d5138c732
 export function getBlurhashDataUrl(inputHash: string) {
@@ -187,6 +188,8 @@ export function ImageCard(props: {
 }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
+  const { download } = useDownloader();
+
   if (
     props.currentFlippedCardId !== undefined &&
     props.currentFlippedCardId !== props.imageData.id &&
@@ -197,11 +200,16 @@ export function ImageCard(props: {
   }
 
   function flip() {
-    console.log("flip", isFlipped);
+    console.log("Running flip onClick");
     if (props.onFlip !== undefined) {
       props.onFlip(!isFlipped, props.imageData);
     }
     setIsFlipped(!isFlipped);
+  }
+
+  function handleDownload(e: React.MouseEvent) {
+    e.stopPropagation();
+    void download(props.imageData.url, "download.png");
   }
 
   return (
@@ -243,6 +251,7 @@ export function ImageCard(props: {
           )}
         >
           <Button>Button</Button>
+          <Button onClick={handleDownload}>Download</Button>
         </div>
       </div>
     </div>
