@@ -199,19 +199,18 @@ export function ImageCard(props: { imageData: ImageData }) {
         // Flipping div
         className={cn(
           "h-full w-full",
-          "duration-700 ease-in-out",
-          isFlipped ? styles.flipped : "",
+          "transform-style-3d transform duration-700 ease-in-out",
+          isFlipped ? "rotate-y-180" : "",
           styles.card,
         )}
       >
         <div
+          // Front of card
           className={cn(
-            "absolute h-full w-full overflow-hidden rounded-3xl",
-            styles.front,
+            "backface-hidden absolute h-full w-full overflow-hidden rounded-3xl",
           )}
         >
           <Image
-            // Front of card
             src={url}
             className="object-contain"
             alt="Audiobook cover image"
@@ -224,8 +223,8 @@ export function ImageCard(props: { imageData: ImageData }) {
         <div
           // Back of card
           className={cn(
-            "absolute h-full w-full overflow-hidden rounded-3xl bg-stone-700",
-            styles.back,
+            "backface-hidden absolute h-full w-full overflow-hidden rounded-3xl bg-stone-700",
+            "rotate-y-180 transform-style-3d transform",
           )}
         >
           <Button>Button</Button>
