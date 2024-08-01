@@ -14,7 +14,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "@next/third-parties": "^14.2.5",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "^5.50.0",
@@ -33,6 +36,7 @@
     "postgres": "^3.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.52.1",
     "react-parallax-tilt": "^1.7.234",
     "react-use-downloader": "^1.2.8",
     "replicate": "^0.32.0",
@@ -40,7 +44,7 @@
     "superjson": "^2.2.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.3"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.620.0",

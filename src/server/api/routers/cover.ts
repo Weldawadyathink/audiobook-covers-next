@@ -28,6 +28,7 @@ function generateImageData(dbData: {
 
 export const coverRouter = createTRPCRouter({
   getCover: publicProcedure
+    // Get cover data from image id
     .input(z.string().trim())
     .query(async ({ input }): Promise<ImageData> => {
       const [result] = await db
@@ -45,6 +46,7 @@ export const coverRouter = createTRPCRouter({
       return generateImageData(result);
     }),
   getSimilar: publicProcedure
+    // Get similar images from image id
     .input(z.string().trim())
     .query(async ({ input }): Promise<Array<ImageData>> => {
       const [targetImage] = await db
@@ -81,7 +83,25 @@ export const coverRouter = createTRPCRouter({
       console.log(`Running replicate with ${input}`);
       return await runSingleClip(input);
     }),
+  searchByString: publicProcedure
+    .input(z.string().trim().min(1))
+    .query(async ({ input }): Promise<Array<ImageData>> => {
+      console.log(`Searching for images by string: ${input}`);
+      const query = await runSingleClip(input);
+      const dbResult = await db
+        .select({
+          id: image.id,
+          extension: image.extension,
+          blurhash: image.blurhash,
+          cosineSimilarity: cosineDistance(image.embedding, query.embedding),
+        })
+        .from(image)
+        .orderBy(cosineDistance(image.embedding, query.embedding))
+        .limit(10);
+      return dbResult.map(generateImageData);
+    }),
   getRandom: publicProcedure
+    // Get a random selection of covers
     .input(z.object({ n: z.number().int() }))
     .query(async ({ input }): Promise<Array<ImageData>> => {
       // If this query gets too slow, switch to TABLESAMPLE

@@ -26,8 +26,14 @@ export default function RootLayout({
           <div className="flex min-h-screen flex-col justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
             <div className="my-6 flex flex-row justify-center gap-8">
               <Link className="my-auto" href="/">
-                <h1 className="text-2xl">Audiobook Covers</h1>
+                <span className="text-2xl">Home</span>
               </Link>
+
+              <Button asChild variant="ghost">
+                <Link href="/image/search/" className="text-l">
+                  Search
+                </Link>
+              </Button>
 
               <Button asChild variant="ghost">
                 <Link href="/about/" className="text-l">

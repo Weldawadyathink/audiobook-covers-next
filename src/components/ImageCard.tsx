@@ -1,11 +1,11 @@
 import type { ImageData } from "@/server/api/routers/cover";
 import Image from "next/image";
-import { getBlurhashUrl, useBlurhashUrl } from "@/lib/blurhash";
+import { useBlurhashUrl } from "@/lib/blurhash";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Tilt from "react-parallax-tilt";
-import { extractColors } from "extract-colors";
+// import { extractColors } from "extract-colors";
 
 export function ImageCard(props: { imageData: ImageData; className?: string }) {
   const maxAngle = 15;
@@ -13,8 +13,8 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
 
   const blurhashUrl = useBlurhashUrl(props.imageData.blurhash);
 
-  const colors = extractColors(getBlurhashUrl(props.imageData.blurhash));
-  console.log(colors);
+  // const colors = extractColors(getBlurhashUrl(props.imageData.blurhash));
+  // console.log(colors);
   return (
     <Tilt
       scale={1.3}
