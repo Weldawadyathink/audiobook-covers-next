@@ -3,6 +3,8 @@ import { z } from "zod";
 import { runSingleClip } from "@/server/utils/clip";
 import { db } from "@/server/db";
 import { image } from "@/server/db/schema";
+import { eq, sql } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
 
 export interface ImageData {
   id: string;
@@ -10,7 +12,38 @@ export interface ImageData {
   blurhash: string;
 }
 
+// Function to generate output type from db result
+function generateImageData(dbData: {
+  id: string;
+  extension: string | null;
+  blurhash: string | null;
+}): ImageData {
+  const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${dbData.id}.${dbData.extension}`;
+  return {
+    id: dbData.id,
+    url: url,
+    blurhash: dbData.blurhash!,
+  };
+}
+
 export const coverRouter = createTRPCRouter({
+  getCover: publicProcedure
+    .input(z.string().trim())
+    .query(async ({ input }): Promise<ImageData> => {
+      const [result] = await db
+        .select({
+          id: image.id,
+          extension: image.extension,
+          blurhash: image.blurhash,
+        })
+        .from(image)
+        .where(eq(image.id, input))
+        .limit(1);
+      if (!result) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      return generateImageData(result);
+    }),
   getTextEmbedding: publicProcedure
     .input(z.string().trim().min(1))
     .query(async ({ input }) => {
@@ -20,6 +53,7 @@ export const coverRouter = createTRPCRouter({
   getRandom: publicProcedure
     .input(z.object({ n: z.number().int() }))
     .query(async ({ input }): Promise<Array<ImageData>> => {
+      // If this query gets too slow, switch to TABLESAMPLE
       const dbResult = await db
         .select({
           id: image.id,
@@ -27,14 +61,8 @@ export const coverRouter = createTRPCRouter({
           blurhash: image.blurhash,
         })
         .from(image)
+        .orderBy(sql`random()`)
         .limit(input.n);
-      return dbResult.map((image) => {
-        const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${image.id}.${image.extension}`;
-        return {
-          id: image.id,
-          url: url,
-          blurhash: image.blurhash!,
-        };
-      });
+      return dbResult.map(generateImageData);
     }),
 });
