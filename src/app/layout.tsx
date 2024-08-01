@@ -6,6 +6,7 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "Audiobook Covers",
@@ -39,6 +40,7 @@ export default function RootLayout({
           </div>
           {children}
         </TRPCReactProvider>
+        <GoogleAnalytics gaId="G-TW1XRPJV89" />
       </body>
     </html>
   );
