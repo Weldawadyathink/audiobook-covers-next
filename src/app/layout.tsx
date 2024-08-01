@@ -6,7 +6,6 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Head from "next/head";
 
 export const metadata: Metadata = {
   title: "Audiobook Covers",
@@ -19,13 +18,6 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <Head>
-        <meta
-          name="google-adsense-account"
-          content="ca-pub-1617879691257562"
-          key="adsense"
-        />
-      </Head>
       <body>
         <TRPCReactProvider>
           <div className="flex flex-row gap-8">
