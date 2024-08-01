@@ -1,29 +1,35 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { ImageCard } from "@/components/ImageCard";
 import { getBlurhashDataUrl } from "@/lib/blurhash";
 import Image from "next/image";
 import React from "react";
 
 export default function Page({ params }: { params: { imageId: string } }) {
-  const { status, data } = api.cover.getCover.useQuery(params.imageId);
+  const image = api.cover.getCover.useQuery(params.imageId);
+  const similar = api.cover.getSimilar.useQuery(params.imageId);
+
   return (
     <>
       <h1>Image {params.imageId}</h1>
-      {status === "pending" && <span>Waiting for query</span>}
-      {status === "error" && <span>404 Image not found</span>}
-      {status === "success" && (
+      {image.status === "pending" && <span>Waiting for query</span>}
+      {image.status === "error" && <span>404 Image not found</span>}
+      {image.status === "success" && (
         <div className="relative m-8 aspect-square overflow-hidden rounded-3xl">
           <Image
-            src={data.url}
+            src={image.data.url}
             alt="Audiobook cover image"
             fill={true}
             placeholder="blur"
-            blurDataURL={getBlurhashDataUrl(data.blurhash)}
+            priority={true}
+            blurDataURL={getBlurhashDataUrl(image.data.blurhash)}
           />
         </div>
       )}
+      <span>Similar Images</span>
+      {similar.status === "pending" && <span>Waiting for query</span>}
+      {similar.status === "error" && <span>404 Similar images not found</span>}
+      {similar.status === "success" && JSON.stringify(similar.data)}
     </>
   );
 }

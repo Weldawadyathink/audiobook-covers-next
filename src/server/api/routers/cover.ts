@@ -3,7 +3,7 @@ import { z } from "zod";
 import { runSingleClip } from "@/server/utils/clip";
 import { db } from "@/server/db";
 import { image } from "@/server/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { cosineDistance, eq, ne, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export interface ImageData {
@@ -43,6 +43,37 @@ export const coverRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
       return generateImageData(result);
+    }),
+  getSimilar: publicProcedure
+    .input(z.string().trim())
+    .query(async ({ input }): Promise<Array<ImageData>> => {
+      const [targetImage] = await db
+        .select({
+          id: image.id,
+          embedding: image.embedding,
+        })
+        .from(image)
+        .where(eq(image.id, input))
+        .limit(1);
+      if (!targetImage) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+      const dbResult = await db
+        .select({
+          id: image.id,
+          extension: image.extension,
+          blurhash: image.blurhash,
+          cosineSimilarity: cosineDistance(
+            image.embedding,
+            targetImage.embedding!,
+          ),
+        })
+        .from(image)
+        .where(ne(image.id, targetImage.id))
+        .orderBy(cosineDistance(image.embedding, targetImage.embedding!))
+        .limit(10);
+      console.log(dbResult);
+      return dbResult.map(generateImageData);
     }),
   getTextEmbedding: publicProcedure
     .input(z.string().trim().min(1))
