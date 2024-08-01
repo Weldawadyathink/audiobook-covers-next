@@ -1,11 +1,13 @@
+"use client";
+
 import type { ImageData } from "@/server/api/routers/cover";
 import Image from "next/image";
 import { useBlurhashUrl } from "@/lib/blurhash";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Tilt from "react-parallax-tilt";
-// import { extractColors } from "extract-colors";
+import { useExtractColors, HexToHSL } from "@/lib/extractColors";
 
 export function ImageCard(props: { imageData: ImageData; className?: string }) {
   const maxAngle = 15;
@@ -13,8 +15,19 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
 
   const blurhashUrl = useBlurhashUrl(props.imageData.blurhash);
 
-  // const colors = extractColors(getBlurhashUrl(props.imageData.blurhash));
-  // console.log(colors);
+  const colors = useExtractColors(blurhashUrl);
+
+  const style: CSSProperties = {};
+
+  if (colors != undefined) {
+    if (colors[0] !== undefined) {
+      const { h, s, l } = HexToHSL(colors[0].hex);
+      console.log({ h: h, l: l, s: s });
+      style.boxShadow = `0 0 20px hsla(${h}, ${s}%, ${l * 0.6}%, 0.5)`;
+    }
+  }
+  console.log([style, colors]);
+
   return (
     <Tilt
       scale={1.3}
@@ -30,6 +43,7 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
           "relative aspect-square cursor-pointer overflow-hidden rounded-3xl",
           props.className,
         )}
+        style={style}
       >
         <Link href={`/image/${props.imageData.id}`}>
           <Image
