@@ -32,6 +32,7 @@
     "postgres": "^3.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-parallax-tilt": "^1.7.234",
     "react-use-downloader": "^1.2.8",
     "replicate": "^0.32.0",
     "server-only": "^0.0.1",

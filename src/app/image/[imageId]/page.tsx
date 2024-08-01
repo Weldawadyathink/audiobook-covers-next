@@ -5,29 +5,33 @@ import { getBlurhashDataUrl } from "@/lib/blurhash";
 import Image from "next/image";
 import React from "react";
 import { ImageCard } from "@/components/ImageCard";
+import Tilt from "react-parallax-tilt";
 
 export default function Page({ params }: { params: { imageId: string } }) {
   const image = api.cover.getCover.useQuery(params.imageId);
   const similar = api.cover.getSimilar.useQuery(params.imageId);
+
+  const maxAngle = 5;
 
   return (
     <>
       <h1>Image {params.imageId}</h1>
       {image.status === "pending" && <span>Waiting for query</span>}
       {image.status === "error" && <span>404 Image not found</span>}
-
-      <div className="relative m-8 aspect-square overflow-hidden rounded-3xl">
-        {image.status === "success" && (
-          <Image
-            src={image.data.url}
-            alt="Audiobook cover image"
-            fill={true}
-            placeholder="blur"
-            priority={true}
-            blurDataURL={getBlurhashDataUrl(image.data.blurhash)}
-          />
-        )}
-      </div>
+      <Tilt tiltMaxAngleX={maxAngle} tiltMaxAngleY={maxAngle}>
+        <div className="relative m-8 aspect-square overflow-hidden rounded-3xl">
+          {image.status === "success" && (
+            <Image
+              src={image.data.url}
+              alt="Audiobook cover image"
+              fill={true}
+              placeholder="blur"
+              priority={true}
+              blurDataURL={getBlurhashDataUrl(image.data.blurhash)}
+            />
+          )}
+        </div>
+      </Tilt>
 
       <span>Similar Images</span>
       {similar.status === "pending" && <span>Waiting for query</span>}
