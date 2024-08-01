@@ -1,11 +1,11 @@
 "use client";
 
 import { api } from "@/trpc/react";
-import { getBlurhashDataUrl } from "@/lib/blurhash";
 import Image from "next/image";
 import React from "react";
 import { ImageCard } from "@/components/ImageCard";
 import Tilt from "react-parallax-tilt";
+import { getBlurhashUrl } from "@/lib/blurhash";
 
 export default function Page({ params }: { params: { imageId: string } }) {
   const image = api.cover.getCover.useQuery(params.imageId);
@@ -27,7 +27,8 @@ export default function Page({ params }: { params: { imageId: string } }) {
               fill={true}
               placeholder="blur"
               priority={true}
-              blurDataURL={getBlurhashDataUrl(image.data.blurhash)}
+              // TODO: See if this function runs a lot and memoize
+              blurDataURL={getBlurhashUrl(image.data.blurhash)}
             />
           )}
         </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import styles from "@/styles/FlipCard.module.css";
 import useDownloader from "react-use-downloader";
 import Link from "next/link";
-import { getBlurhashDataUrl } from "@/lib/blurhash";
+import { getBlurhashUrl } from "@/lib/blurhash";
 
 export function ImageFlipCard(props: {
   imageData: ImageData;
@@ -49,7 +49,7 @@ export function ImageFlipCard(props: {
         // Flipping div
         className={cn(
           "h-full w-full",
-          "transform-style-3d transform duration-700 ease-in-out",
+          "transform duration-700 ease-in-out transform-style-3d",
           isFlipped ? "rotate-y-180" : "",
           styles.card,
         )}
@@ -57,7 +57,7 @@ export function ImageFlipCard(props: {
         <div
           // Front of card
           className={cn(
-            "backface-hidden absolute h-full w-full overflow-hidden rounded-3xl",
+            "absolute h-full w-full overflow-hidden rounded-3xl backface-hidden",
           )}
         >
           <Image
@@ -66,15 +66,15 @@ export function ImageFlipCard(props: {
             alt="Audiobook cover image"
             fill={true}
             placeholder="blur"
-            blurDataURL={getBlurhashDataUrl(props.imageData.blurhash)}
+            blurDataURL={getBlurhashUrl(props.imageData.blurhash)}
           />
         </div>
 
         <div
           // Back of card
           className={cn(
-            "backface-hidden absolute h-full w-full overflow-hidden rounded-3xl bg-stone-700",
-            "rotate-y-180 transform-style-3d transform",
+            "absolute h-full w-full overflow-hidden rounded-3xl bg-stone-700 backface-hidden",
+            "transform rotate-y-180 transform-style-3d",
             "flex flex-col items-center justify-center gap-3",
           )}
         >

@@ -1,7 +1,12 @@
 // Originally from https://gist.github.com/oleggrishechkin/95483267a0b242e0004cbd5d5138c732
 import { decode } from "blurhash";
+import { useMemo } from "react";
 
-export function getBlurhashDataUrl(inputHash: string) {
+export function useBlurhashUrl(blurhash: string) {
+  return useMemo(() => getBlurhashUrl(blurhash), [blurhash]);
+}
+
+export function getBlurhashUrl(inputHash: string) {
   // source of code below https://github.com/wheany/js-png-encoder/blob/master/generatepng.js
   const DEFLATE_METHOD = String.fromCharCode(0x78, 0x01);
   const CRC_TABLE: number[] = [];

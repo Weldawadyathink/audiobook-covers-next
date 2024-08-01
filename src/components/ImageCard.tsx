@@ -1,14 +1,20 @@
 import type { ImageData } from "@/server/api/routers/cover";
 import Image from "next/image";
-import { getBlurhashDataUrl } from "@/lib/blurhash";
-import React from "react";
+import { getBlurhashUrl, useBlurhashUrl } from "@/lib/blurhash";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Tilt from "react-parallax-tilt";
+import { extractColors } from "extract-colors";
 
 export function ImageCard(props: { imageData: ImageData; className?: string }) {
   const maxAngle = 15;
-  const [isHovered, setIsHovered] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const blurhashUrl = useBlurhashUrl(props.imageData.blurhash);
+
+  const colors = extractColors(getBlurhashUrl(props.imageData.blurhash));
+  console.log(colors);
   return (
     <Tilt
       scale={1.3}
@@ -31,7 +37,7 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
             alt="Audiobook cover image"
             fill={true}
             placeholder="blur"
-            blurDataURL={getBlurhashDataUrl(props.imageData.blurhash)}
+            blurDataURL={blurhashUrl}
           />
         </Link>
       </div>
