@@ -23,7 +23,6 @@ export default function Page({ params }: { params: { imageId: string } }) {
 
   function increaseSimilarity() {
     setSimilarity((s) => {
-      console.log(s);
       if (s >= maxSimilarityLevel) {
         return s;
       }

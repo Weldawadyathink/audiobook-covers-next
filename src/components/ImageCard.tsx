@@ -27,7 +27,6 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
       style.boxShadow = `0 0 20px hsla(${h}, ${s}%, ${l * 0.6}%, 0.5)`;
     }
   }
-  console.log([style, colors]);
 
   return (
     <Tilt
