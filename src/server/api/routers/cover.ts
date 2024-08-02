@@ -3,13 +3,17 @@ import { z } from "zod";
 import { runSingleClip } from "@/server/utils/clip";
 import { db } from "@/server/db";
 import { image } from "@/server/db/schema";
-import { and, cosineDistance, eq, ne, sql } from "drizzle-orm";
+import { and, cosineDistance, eq, lte, ne, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export interface ImageData {
   id: string;
   url: string;
   blurhash: string;
+}
+
+export interface ImageDataWithRanking extends ImageData {
+  similarity: number;
 }
 
 // Function to generate output type from db result
@@ -25,6 +29,34 @@ function generateImageData(dbData: {
     blurhash: dbData.blurhash!,
   };
 }
+
+function generateImageDataWithRanking(dbData: {
+  id: string;
+  extension: string | null;
+  blurhash: string | null;
+  similarity: unknown;
+}): ImageDataWithRanking {
+  const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${dbData.id}.${dbData.extension}`;
+  return {
+    id: dbData.id,
+    url: url,
+    blurhash: dbData.blurhash!,
+    similarity: dbData.similarity as number,
+  };
+}
+
+// How similar do items need to be to match
+// cosine distance must be under the value
+const similarityLevelMap = {
+  1: 0.75,
+  2: 0.8,
+  3: 0.85,
+  4: 0.9,
+  5: 0.95,
+};
+// There has to be a better way
+const similarityLevel = z.number().int().min(1).max(5).default(1);
+export const maxSimilarityLevel = 5;
 
 export const coverRouter = createTRPCRouter({
   getCover: publicProcedure
@@ -53,7 +85,7 @@ export const coverRouter = createTRPCRouter({
         n: z.number().int().default(10),
       }),
     )
-    .query(async ({ input }): Promise<Array<ImageData>> => {
+    .query(async ({ input }): Promise<Array<ImageDataWithRanking>> => {
       const [targetImage] = await db
         .select({
           id: image.id,
@@ -70,38 +102,51 @@ export const coverRouter = createTRPCRouter({
           id: image.id,
           extension: image.extension,
           blurhash: image.blurhash,
-          cosineSimilarity: cosineDistance(
-            image.embedding,
-            targetImage.embedding!,
-          ),
+          similarity: cosineDistance(image.embedding, targetImage.embedding!),
         })
         .from(image)
         .where(and(ne(image.id, targetImage.id), eq(image.searchable, true)))
         .orderBy(cosineDistance(image.embedding, targetImage.embedding!))
         .limit(input.n);
-      return dbResult.map(generateImageData);
+      return dbResult.map(generateImageDataWithRanking);
     }),
   searchByString: publicProcedure
     .input(
       z.object({
         search: z.string().trim().min(1),
-        n: z.number().int().default(10),
+        similarityThreshold: similarityLevel,
       }),
     )
-    .query(async ({ input }): Promise<Array<ImageData>> => {
+    .query(async ({ input }): Promise<Array<ImageDataWithRanking>> => {
       const query = await runSingleClip(input.search);
+
+      // @ts-expect-error Indexing works because of zod validation
+      const similarity = similarityLevelMap[
+        input.similarityThreshold
+      ] as number;
+
+      const sq = db.$with("sq").as(
+        db
+          .select({
+            id: image.id,
+            extension: image.extension,
+            blurhash: image.blurhash,
+            similarity: cosineDistance(image.embedding, query.embedding).as(
+              "similarity",
+            ),
+          })
+          .from(image)
+          .where(eq(image.searchable, true)),
+      );
+
       const dbResult = await db
-        .select({
-          id: image.id,
-          extension: image.extension,
-          blurhash: image.blurhash,
-          cosineSimilarity: cosineDistance(image.embedding, query.embedding),
-        })
-        .from(image)
-        .where(eq(image.searchable, true))
-        .orderBy(cosineDistance(image.embedding, query.embedding))
-        .limit(input.n);
-      return dbResult.map(generateImageData);
+        .with(sq)
+        .select()
+        .from(sq)
+        .where(lte(sq.similarity, similarity))
+        .orderBy(sq.similarity);
+
+      return dbResult.map(generateImageDataWithRanking);
     }),
   getRandom: publicProcedure
     // Get a random selection of covers

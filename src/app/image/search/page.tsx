@@ -23,10 +23,13 @@ const formSchema = z.object({
   q: z.string().trim().min(1),
 });
 
+const maxSimilarityLevel = 5;
+
 export default function Page() {
   const [query, setQuery] = useState("");
+  const [similarity, setSimilarity] = useState(1);
   const images = api.cover.searchByString.useQuery(
-    { search: query },
+    { search: query, similarityThreshold: similarity },
     {
       enabled: () => query !== "",
     },
@@ -39,7 +42,17 @@ export default function Page() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setSimilarity(1);
     setQuery(values.q);
+  }
+
+  function increaseSimilarity() {
+    setSimilarity((s) => {
+      if (s + 1 >= maxSimilarityLevel) {
+        return s;
+      }
+      return s + 1;
+    });
   }
 
   return (
@@ -77,11 +90,20 @@ export default function Page() {
         </div>
       )}
       <div className="flex flex-wrap justify-center gap-6 p-12">
+        {images.isSuccess && images.data.length === 0 && (
+          <p>Could not find any results</p>
+        )}
         {images.isSuccess &&
           images.data.map((image) => (
-            <ImageCard key={image.id} imageData={image} className="w-56" />
+            <>
+              <ImageCard key={image.id} imageData={image} className="w-56" />
+              <span>{image.similarity * 100}</span>
+            </>
           ))}
       </div>
+      {images.isSuccess && similarity < maxSimilarityLevel && (
+        <Button onClick={increaseSimilarity}>Show more</Button>
+      )}
     </>
   );
 }
