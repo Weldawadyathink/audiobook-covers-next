@@ -3,7 +3,7 @@ import { z } from "zod";
 import { runSingleClip } from "@/server/utils/clip";
 import { db } from "@/server/db";
 import { image } from "@/server/db/schema";
-import { cosineDistance, eq, ne, sql } from "drizzle-orm";
+import { and, cosineDistance, eq, ne, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 export interface ImageData {
@@ -71,22 +71,14 @@ export const coverRouter = createTRPCRouter({
           ),
         })
         .from(image)
-        .where(ne(image.id, targetImage.id))
+        .where(and(ne(image.id, targetImage.id), eq(image.searchable, true)))
         .orderBy(cosineDistance(image.embedding, targetImage.embedding!))
         .limit(10);
-      console.log(dbResult);
       return dbResult.map(generateImageData);
-    }),
-  getTextEmbedding: publicProcedure
-    .input(z.string().trim().min(1))
-    .query(async ({ input }) => {
-      console.log(`Running replicate with ${input}`);
-      return await runSingleClip(input);
     }),
   searchByString: publicProcedure
     .input(z.string().trim().min(1))
     .query(async ({ input }): Promise<Array<ImageData>> => {
-      console.log(`Searching for images by string: ${input}`);
       const query = await runSingleClip(input);
       const dbResult = await db
         .select({
@@ -96,6 +88,7 @@ export const coverRouter = createTRPCRouter({
           cosineSimilarity: cosineDistance(image.embedding, query.embedding),
         })
         .from(image)
+        .where(eq(image.searchable, true))
         .orderBy(cosineDistance(image.embedding, query.embedding))
         .limit(10);
       return dbResult.map(generateImageData);
@@ -112,6 +105,7 @@ export const coverRouter = createTRPCRouter({
           blurhash: image.blurhash,
         })
         .from(image)
+        .where(eq(image.searchable, true))
         .orderBy(sql`random()`)
         .limit(input.n);
       return dbResult.map(generateImageData);
