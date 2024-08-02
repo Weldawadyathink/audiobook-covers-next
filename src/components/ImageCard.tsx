@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Tilt from "react-parallax-tilt";
 import { useExtractColors, HexToHSL } from "@/lib/extractColors";
+import { Badge } from "@/components/ui/badge";
+import { IconBrandReddit } from "@tabler/icons-react";
 
 export function ImageCard(props: { imageData: ImageData; className?: string }) {
   const maxAngle = 15;
@@ -35,8 +37,11 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
       tiltMaxAngleY={maxAngle}
       onEnter={() => setIsHovered(true)}
       onLeave={() => setIsHovered(false)}
-      className={isHovered ? "z-10" : "z-0"}
+      className={cn("transform-style-3d", isHovered ? "z-10" : "z-0")}
     >
+      <Badge className="absolute z-20 aspect-square transform perspective-200 translate-z-5">
+        <IconBrandReddit />
+      </Badge>
       <div
         className={cn(
           "relative aspect-square cursor-pointer overflow-hidden rounded-3xl",

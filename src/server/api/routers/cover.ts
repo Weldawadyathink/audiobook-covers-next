@@ -10,6 +10,7 @@ export interface ImageData {
   id: string;
   url: string;
   blurhash: string;
+  source: string;
 }
 
 export interface ImageDataWithRanking extends ImageData {
@@ -21,12 +22,14 @@ function generateImageData(dbData: {
   id: string;
   extension: string | null;
   blurhash: string | null;
+  source: string | null;
 }): ImageData {
   const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${dbData.id}.${dbData.extension}`;
   return {
     id: dbData.id,
     url: url,
     blurhash: dbData.blurhash!,
+    source: dbData.source!,
   };
 }
 
@@ -34,6 +37,7 @@ function generateImageDataWithRanking(dbData: {
   id: string;
   extension: string | null;
   blurhash: string | null;
+  source: string | null;
   similarity: unknown;
 }): ImageDataWithRanking {
   const url = `https://f001.backblazeb2.com/file/com-audiobookcovers/original/${dbData.id}.${dbData.extension}`;
@@ -41,6 +45,7 @@ function generateImageDataWithRanking(dbData: {
     id: dbData.id,
     url: url,
     blurhash: dbData.blurhash!,
+    source: dbData.source!,
     similarity: dbData.similarity as number,
   };
 }
@@ -75,6 +80,7 @@ export const coverRouter = createTRPCRouter({
           id: image.id,
           extension: image.extension,
           blurhash: image.blurhash,
+          source: image.source,
         })
         .from(image)
         .where(eq(image.id, input))
@@ -116,6 +122,7 @@ export const coverRouter = createTRPCRouter({
             id: image.id,
             extension: image.extension,
             blurhash: image.blurhash,
+            source: image.source,
             similarity: cosineDistance(
               image.embedding,
               targetImage.embedding!,
@@ -155,6 +162,7 @@ export const coverRouter = createTRPCRouter({
             id: image.id,
             extension: image.extension,
             blurhash: image.blurhash,
+            source: image.source,
             similarity: cosineDistance(image.embedding, query.embedding).as(
               "similarity",
             ),
@@ -182,6 +190,7 @@ export const coverRouter = createTRPCRouter({
           id: image.id,
           extension: image.extension,
           blurhash: image.blurhash,
+          source: image.source,
         })
         .from(image)
         .where(eq(image.searchable, true))
