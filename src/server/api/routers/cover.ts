@@ -47,7 +47,12 @@ export const coverRouter = createTRPCRouter({
     }),
   getSimilar: publicProcedure
     // Get similar images from image id
-    .input(z.string().trim())
+    .input(
+      z.object({
+        id: z.string().trim(),
+        n: z.number().int().default(10),
+      }),
+    )
     .query(async ({ input }): Promise<Array<ImageData>> => {
       const [targetImage] = await db
         .select({
@@ -55,7 +60,7 @@ export const coverRouter = createTRPCRouter({
           embedding: image.embedding,
         })
         .from(image)
-        .where(eq(image.id, input))
+        .where(eq(image.id, input.id))
         .limit(1);
       if (!targetImage) {
         throw new TRPCError({ code: "NOT_FOUND" });
@@ -73,13 +78,18 @@ export const coverRouter = createTRPCRouter({
         .from(image)
         .where(and(ne(image.id, targetImage.id), eq(image.searchable, true)))
         .orderBy(cosineDistance(image.embedding, targetImage.embedding!))
-        .limit(10);
+        .limit(input.n);
       return dbResult.map(generateImageData);
     }),
   searchByString: publicProcedure
-    .input(z.string().trim().min(1))
+    .input(
+      z.object({
+        search: z.string().trim().min(1),
+        n: z.number().int().default(10),
+      }),
+    )
     .query(async ({ input }): Promise<Array<ImageData>> => {
-      const query = await runSingleClip(input);
+      const query = await runSingleClip(input.search);
       const dbResult = await db
         .select({
           id: image.id,
@@ -90,7 +100,7 @@ export const coverRouter = createTRPCRouter({
         .from(image)
         .where(eq(image.searchable, true))
         .orderBy(cosineDistance(image.embedding, query.embedding))
-        .limit(10);
+        .limit(input.n);
       return dbResult.map(generateImageData);
     }),
   getRandom: publicProcedure

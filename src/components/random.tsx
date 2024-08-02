@@ -4,7 +4,7 @@ import { api } from "@/trpc/react";
 import { ImageCard } from "@/components/ImageCard";
 
 export function RandomView() {
-  const n = 10;
+  const n = 50;
 
   const images = api.cover.getRandom.useQuery({ n: n });
 

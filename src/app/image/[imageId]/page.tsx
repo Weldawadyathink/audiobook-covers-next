@@ -9,7 +9,7 @@ import { getBlurhashUrl } from "@/lib/blurhash";
 
 export default function Page({ params }: { params: { imageId: string } }) {
   const image = api.cover.getCover.useQuery(params.imageId);
-  const similar = api.cover.getSimilar.useQuery(params.imageId);
+  const similar = api.cover.getSimilar.useQuery({ id: params.imageId });
 
   const maxAngle = 5;
 

@@ -25,9 +25,12 @@ const formSchema = z.object({
 
 export default function Page() {
   const [query, setQuery] = useState("");
-  const images = api.cover.searchByString.useQuery(query, {
-    enabled: () => query !== "",
-  });
+  const images = api.cover.searchByString.useQuery(
+    { search: query },
+    {
+      enabled: () => query !== "",
+    },
+  );
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
