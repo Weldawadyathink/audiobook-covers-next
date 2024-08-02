@@ -37,7 +37,9 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
       tiltMaxAngleY={maxAngle}
       onEnter={() => setIsHovered(true)}
       onLeave={() => setIsHovered(false)}
-      className={cn("transform-style-3d", isHovered ? "z-10" : "z-0")}
+      // className={cn("transform-style-3d", isHovered ? "z-10" : "z-0")}
+      // TODO: Find out why transform-style-3d breaks clicking on Link elements
+      className={isHovered ? "z-10" : "z-0"}
     >
       <Badge className="absolute z-20 aspect-square transform perspective-200 translate-z-5">
         <IconBrandReddit />
