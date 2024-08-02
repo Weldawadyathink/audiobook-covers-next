@@ -102,7 +102,9 @@ export default function Page() {
           ))}
       </div>
       {images.isSuccess && similarity < maxSimilarityLevel && (
-        <Button onClick={increaseSimilarity}>Show more</Button>
+        <div className="flex flex-row justify-center">
+          <Button onClick={increaseSimilarity}>Show more</Button>
+        </div>
       )}
     </>
   );

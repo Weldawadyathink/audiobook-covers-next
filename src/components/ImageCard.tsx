@@ -22,7 +22,6 @@ export function ImageCard(props: { imageData: ImageData; className?: string }) {
   if (colors != undefined) {
     if (colors[0] !== undefined) {
       const { h, s, l } = HexToHSL(colors[0].hex);
-      console.log({ h: h, l: l, s: s });
       style.boxShadow = `0 0 20px hsla(${h}, ${s}%, ${l * 0.6}%, 0.5)`;
     }
   }

@@ -47,12 +47,19 @@ function generateImageDataWithRanking(dbData: {
 
 // How similar do items need to be to match
 // cosine distance must be under the value
-const similarityLevelMap = {
+const textSimilarityLevelMap = {
   1: 0.75,
   2: 0.8,
   3: 0.85,
   4: 0.9,
   5: 0.95,
+};
+const imageSimilarityLevelMap = {
+  1: 0.15,
+  2: 0.2,
+  3: 0.25,
+  4: 0.3,
+  5: 0.35,
 };
 // There has to be a better way
 const similarityLevel = z.number().int().min(1).max(5).default(1);
@@ -82,10 +89,15 @@ export const coverRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().trim(),
-        n: z.number().int().default(10),
+        similarityThreshold: similarityLevel,
       }),
     )
     .query(async ({ input }): Promise<Array<ImageDataWithRanking>> => {
+      // @ts-expect-error Indexing works because of zod validation
+      const similarity = imageSimilarityLevelMap[
+        input.similarityThreshold
+      ] as number;
+
       const [targetImage] = await db
         .select({
           id: image.id,
@@ -97,17 +109,29 @@ export const coverRouter = createTRPCRouter({
       if (!targetImage) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
+
+      const sq = db.$with("sq").as(
+        db
+          .select({
+            id: image.id,
+            extension: image.extension,
+            blurhash: image.blurhash,
+            similarity: cosineDistance(
+              image.embedding,
+              targetImage.embedding!,
+            ).as("similarity"),
+          })
+          .from(image)
+          .where(and(eq(image.searchable, true), ne(image.id, targetImage.id))),
+      );
+
       const dbResult = await db
-        .select({
-          id: image.id,
-          extension: image.extension,
-          blurhash: image.blurhash,
-          similarity: cosineDistance(image.embedding, targetImage.embedding!),
-        })
-        .from(image)
-        .where(and(ne(image.id, targetImage.id), eq(image.searchable, true)))
-        .orderBy(cosineDistance(image.embedding, targetImage.embedding!))
-        .limit(input.n);
+        .with(sq)
+        .select()
+        .from(sq)
+        .where(lte(sq.similarity, similarity))
+        .orderBy(sq.similarity);
+
       return dbResult.map(generateImageDataWithRanking);
     }),
   searchByString: publicProcedure
@@ -121,7 +145,7 @@ export const coverRouter = createTRPCRouter({
       const query = await runSingleClip(input.search);
 
       // @ts-expect-error Indexing works because of zod validation
-      const similarity = similarityLevelMap[
+      const similarity = textSimilarityLevelMap[
         input.similarityThreshold
       ] as number;
 
