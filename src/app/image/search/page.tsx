@@ -48,7 +48,7 @@ export default function Page() {
             name="q"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Search</FormLabel>
                 <FormControl>
                   <Input
                     className="text-black"
@@ -56,9 +56,7 @@ export default function Page() {
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
+                <FormDescription>Enter a search term</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

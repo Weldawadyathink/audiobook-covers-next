@@ -15,7 +15,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
 
   return (
     <>
-      <h1>Image {params.imageId}</h1>
+      <h1 className="mx-6">{params.imageId}</h1>
       {image.status === "pending" && <span>Waiting for query</span>}
       {image.status === "error" && <span>404 Image not found</span>}
       <Tilt tiltMaxAngleX={maxAngle} tiltMaxAngleY={maxAngle}>
