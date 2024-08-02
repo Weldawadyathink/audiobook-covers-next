@@ -7,6 +7,7 @@ import { ImageCard } from "@/components/ImageCard";
 import Tilt from "react-parallax-tilt";
 import { getBlurhashUrl } from "@/lib/blurhash";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/Spinner";
 
 const maxSimilarityLevel = 5;
 
@@ -23,7 +24,7 @@ export default function Page({ params }: { params: { imageId: string } }) {
   function increaseSimilarity() {
     setSimilarity((s) => {
       console.log(s);
-      if (s + 1 >= maxSimilarityLevel) {
+      if (s >= maxSimilarityLevel) {
         return s;
       }
       return s + 1;
@@ -33,8 +34,8 @@ export default function Page({ params }: { params: { imageId: string } }) {
   return (
     <>
       <h1 className="mx-6">{params.imageId}</h1>
-      {image.status === "pending" && <span>Waiting for query</span>}
-      {image.status === "error" && <span>404 Image not found</span>}
+      {image.status === "pending" && <Spinner />}
+      {image.status === "error" && <span>Could not find image</span>}
       <Tilt tiltMaxAngleX={maxAngle} tiltMaxAngleY={maxAngle}>
         <div className="relative m-8 aspect-square overflow-hidden rounded-3xl">
           {image.status === "success" && (
@@ -52,25 +53,29 @@ export default function Page({ params }: { params: { imageId: string } }) {
       </Tilt>
 
       <span>Similar Images</span>
-      {similar.status === "pending" && <span>Waiting for query</span>}
-      {similar.status === "error" && <span>404 Similar images not found</span>}
+      {similar.status === "pending" && <Spinner />}
+      {similar.status === "error" && <span>Error finding similar images</span>}
       {similar.status === "success" && (
         <>
           <div className="flex flex-wrap justify-center gap-6 p-12">
             {similar.data?.map((image) => (
-              <>
-                <ImageCard imageData={image} key={image.id} className="w-56" />
-                <span>{image.similarity * 100}</span>
-              </>
+              <ImageCard imageData={image} key={image.id} className="w-56" />
             ))}
           </div>
           {similarity < maxSimilarityLevel && (
             <div className="flex flex-row justify-center">
-              <Button onClick={increaseSimilarity}>Show more</Button>
+              <Button
+                className="text-2xl"
+                variant="ghost"
+                onClick={increaseSimilarity}
+              >
+                Show more
+              </Button>
             </div>
           )}
         </>
       )}
+      <div className="my-6" />
     </>
   );
 }

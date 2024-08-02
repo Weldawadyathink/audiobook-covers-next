@@ -4,9 +4,8 @@ import { api } from "@/trpc/react";
 import { ImageCard } from "@/components/ImageCard";
 
 export function RandomView() {
-  const n = 50;
-
-  const images = api.cover.getRandom.useQuery({ n: n });
+  const numImages = 50;
+  const images = api.cover.getRandom.useQuery({ n: numImages });
 
   return (
     <div className="flex flex-wrap justify-center gap-6 p-12">

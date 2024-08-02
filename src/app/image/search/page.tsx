@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import { api } from "@/trpc/react";
 import { Separator } from "@/components/ui/separator";
 import { ImageCard } from "@/components/ImageCard";
+import { Spinner } from "@/components/Spinner";
 
 const formSchema = z.object({
   q: z.string().trim().min(1),
@@ -48,7 +49,7 @@ export default function Page() {
 
   function increaseSimilarity() {
     setSimilarity((s) => {
-      if (s + 1 >= maxSimilarityLevel) {
+      if (s >= maxSimilarityLevel) {
         return s;
       }
       return s + 1;
@@ -81,24 +82,14 @@ export default function Page() {
         </form>
       </Form>
       <Separator className="my-2" />
-      {images.isLoading && (
-        <div className="flex justify-center">
-          <div
-            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-            role="status"
-          />
-        </div>
-      )}
+      {images.isLoading && <Spinner />}
       <div className="flex flex-wrap justify-center gap-6 p-12">
         {images.isSuccess && images.data.length === 0 && (
           <p>Could not find any results</p>
         )}
         {images.isSuccess &&
           images.data.map((image) => (
-            <>
-              <ImageCard key={image.id} imageData={image} className="w-56" />
-              <span>{image.similarity * 100}</span>
-            </>
+            <ImageCard key={image.id} imageData={image} className="w-56" />
           ))}
       </div>
       {images.isSuccess && similarity < maxSimilarityLevel && (

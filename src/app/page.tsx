@@ -1,5 +1,5 @@
 import { HydrateClient } from "@/trpc/server";
-import { RandomView } from "@/components/random";
+import { RandomView } from "@/components/RandomView";
 
 export default async function Home() {
   return (
