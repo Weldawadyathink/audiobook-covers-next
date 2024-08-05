@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { getHTTPStatusCodeFromError } from "@trpc/server/http";
-import type { NextApiRequest } from "next";
 import { createCaller } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import { cache } from "react";
 import { headers } from "next/headers";
+import { type NextRequest } from "next/server";
 
 const createContext = cache(() => {
   const heads = new Headers(headers());
@@ -27,8 +27,8 @@ type ResponseData = Array<{
   apiUsage: string;
 }>;
 
-export async function GET(req: NextApiRequest) {
-  const url = new URL(req.url!);
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
   const query = url.searchParams.get("q");
 
   if (!query) {
