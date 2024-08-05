@@ -1,29 +1,24 @@
-# Create T3 App
+# Audiobook-Covers
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Audiobook-Covers is a project that downloads and archives audiobook covers from [reddit.com/r/audiobookcovers](https://www.reddit.com/r/audiobookcovers/), stores them in a local database, and performs OCR using Google Cloud Vision API. The project also includes deployment scripts for Cloudflare R2, S3 compatible services, and Elasticsearch. The Cloudflare Worker serves as a serverless API for search, and Cloudflare Pages hosts a website for search functionality and API documentation.
 
-## What's next? How do I make an app with this?
+The purpose of this project is to create a centralized and searchable archive of audiobook covers for enthusiasts, researchers, and developers.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+The official host for this project is at [audiobookcovers.com](https://audiobookcovers.com)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Limitations and Future Improvements
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+* Currently, only downloads compatible with bdfr (bulk downloader for reddit) are supported. Planned improvements include downloading links to Google Drive, Imgur albums, and other photo links from within comments.
 
-## Learn More
+## Contributing
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+* Report issues or request features using GitHub Issues.
+* Submit bug fixes or improvements via pull requests.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## License
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+This project is licensed under the GNU General Public License v3.
 
-## How do I deploy this?
+## Star History
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+[![Star History Chart](https://api.star-history.com/svg?repos=Weldawadyathink/Audiobook-Covers&type=Date)](https://star-history.com/#Weldawadyathink/Audiobook-Covers&Date)
